@@ -44,7 +44,9 @@
     "build": "tsup",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "pack:check": "npm pack --dry-run --json",
     "test": "vitest run",
+    "test:package": "npm run build && vitest run --config vitest.package.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [
