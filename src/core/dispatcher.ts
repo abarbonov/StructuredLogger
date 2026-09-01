@@ -4,7 +4,9 @@ import type { ExporterErrorHandler } from '../types/logger.js';
 import type { LogLevel, LogRecord, SerializedError } from '../types/record.js';
 
 export interface ResolvedExporter {
+  close?: () => void | Promise<void>;
   export: (record: LogRecord) => void | Promise<void>;
+  flush?: () => void | Promise<void>;
   level?: LogLevel;
   name: string;
 }
@@ -32,8 +34,14 @@ export const normalizeExporter = (exporter: LogExporterInput): ResolvedExporter 
     };
   }
 
+  const close = exporter.close;
+  const exportRecord = exporter.export;
+  const flush = exporter.flush;
+
   return {
-    export: (record) => exporter.export(record),
+    close: close === undefined ? undefined : () => close.call(exporter),
+    export: (record) => exportRecord.call(exporter, record),
+    flush: flush === undefined ? undefined : () => flush.call(exporter),
     level: exporter.level,
     name: getExporterName(exporter)
   };
@@ -42,7 +50,8 @@ export const normalizeExporter = (exporter: LogExporterInput): ResolvedExporter 
 const reportExporterError = (
   handler: ExporterErrorHandler | undefined,
   exporter: ResolvedExporter,
-  record: LogRecord
+  operation: 'close' | 'export' | 'flush',
+  recordId?: string
 ) => {
   if (handler === undefined) {
     return;
@@ -53,13 +62,30 @@ const reportExporterError = (
       handler({
         error: createFallbackExporterError(),
         exporter: exporter.name,
-        operation: 'export',
-        recordId: record.id
+        operation,
+        ...(recordId === undefined ? {} : { recordId })
       })
     ).catch(() => undefined);
   } catch {
     // no-op
   }
+};
+
+const runLifecycleOperation = async (
+  exporters: readonly ResolvedExporter[],
+  operation: 'close' | 'flush',
+  onExporterError: ExporterErrorHandler | undefined
+) => {
+  const targets = exporters.filter((exporter) => exporter[operation] !== undefined);
+  const results = await Promise.allSettled(
+    targets.map((exporter) => Promise.resolve().then(() => exporter[operation]?.()))
+  );
+
+  results.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      reportExporterError(onExporterError, targets[index], operation);
+    }
+  });
 };
 
 export const dispatchRecord = async (
@@ -76,7 +102,17 @@ export const dispatchRecord = async (
 
   results.forEach((result, index) => {
     if (result.status === 'rejected') {
-      reportExporterError(onExporterError, targets[index], record);
+      reportExporterError(onExporterError, targets[index], 'export', record.id);
     }
   });
 };
+
+export const flushExporters = (
+  exporters: readonly ResolvedExporter[],
+  onExporterError: ExporterErrorHandler | undefined
+) => runLifecycleOperation(exporters, 'flush', onExporterError);
+
+export const closeExporters = (
+  exporters: readonly ResolvedExporter[],
+  onExporterError: ExporterErrorHandler | undefined
+) => runLifecycleOperation(exporters, 'close', onExporterError);
