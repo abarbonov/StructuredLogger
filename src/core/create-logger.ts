@@ -1,5 +1,6 @@
 import { isPlainData, mergeLogContext } from './context.js';
 import { dispatchRecord, normalizeExporter, type ResolvedExporter } from './dispatcher.js';
+import { createLoggerLifecycle, type LoggerLifecycle } from './lifecycle.js';
 import { isLogLevel, isLogLevelEnabled } from './levels.js';
 import { redactLogRecord } from './redact.js';
 import { createLogRecord } from './records.js';
@@ -237,9 +238,12 @@ const resolveLoggerOptions = (options: LoggerOptions): ResolvedLoggerOptions => 
   };
 };
 
-const createLoggerFromOptions = (options: ResolvedLoggerOptions): StructuredLogger => {
+const createLoggerFromOptions = (
+  options: ResolvedLoggerOptions,
+  lifecycle: LoggerLifecycle = createLoggerLifecycle(options.exporters, options.onExporterError)
+): StructuredLogger => {
   const log = (level: LogLevel, message: string, data?: LogData | Error) => {
-    if (!isLogLevelEnabled(level, options.level)) {
+    if (lifecycle.isClosed() || !isLogLevelEnabled(level, options.level)) {
       return;
     }
 
@@ -256,6 +260,7 @@ const createLoggerFromOptions = (options: ResolvedLoggerOptions): StructuredLogg
       options.redact
     );
     const delivery = dispatchRecord(record, options.exporters, options.onExporterError);
+    lifecycle.trackDelivery(delivery);
 
     if (options.delivery === 'await') {
       return delivery;
@@ -264,15 +269,18 @@ const createLoggerFromOptions = (options: ResolvedLoggerOptions): StructuredLogg
 
   return {
     child: (context) =>
-      createLoggerFromOptions({
-        ...options,
-        context: mergeLogContext(options.context, context)
-      }),
-    close: () => Promise.resolve(),
+      createLoggerFromOptions(
+        {
+          ...options,
+          context: mergeLogContext(options.context, context)
+        },
+        lifecycle
+      ),
+    close: lifecycle.close,
     debug: (message, data) => log('debug', message, data),
     error: (message, data) => log('error', message, data),
     fatal: (message, data) => log('fatal', message, data),
-    flush: () => Promise.resolve(),
+    flush: lifecycle.flush,
     info: (message, data) => log('info', message, data),
     trace: (message, data) => log('trace', message, data),
     warn: (message, data) => log('warn', message, data)
