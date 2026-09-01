@@ -20,6 +20,45 @@ export interface ConsoleLogExporterOptions {
   level?: LogLevel;
 }
 
+export interface HttpFetchRequest {
+  body: string;
+  headers: Readonly<Record<string, string>>;
+  method: 'POST';
+  signal: AbortSignal;
+}
+
+export interface HttpFetchResponse {
+  ok: boolean;
+  status: number;
+}
+
+export type HttpFetch = (endpoint: string, request: HttpFetchRequest) => Promise<HttpFetchResponse>;
+
+export type HttpDeliveryOperation = 'enqueue' | 'flush';
+
+export interface HttpDeliveryErrorEvent {
+  batchSize: number;
+  endpoint: string;
+  exporter: 'http';
+  operation: HttpDeliveryOperation;
+  queueSize: number;
+  statusClass?: string;
+}
+
+export type HttpDeliveryErrorHandler = (event: HttpDeliveryErrorEvent) => void;
+
+export interface HttpLogExporterOptions {
+  batchSize?: number;
+  endpoint: string;
+  fetch?: HttpFetch;
+  flushInterval?: number;
+  headers?: Readonly<Record<string, string>>;
+  level?: LogLevel;
+  maxQueueSize?: number;
+  onDeliveryError?: HttpDeliveryErrorHandler;
+  timeout?: number;
+}
+
 export type MaskStrategy = 'hash' | 'mask' | 'partial' | 'remove' | 'custom';
 
 export type RedactionMode = 'allowlist' | 'denylist';
