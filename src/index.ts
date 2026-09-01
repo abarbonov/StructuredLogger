@@ -1,4 +1,5 @@
 export { mergeLogContext, normalizeLogData } from './core/context.js';
+export { createLogger } from './core/create-logger.js';
 export { createRecordId } from './core/id.js';
 export { getLogLevelRank, isLogLevel, isLogLevelEnabled, LOG_LEVELS } from './core/levels.js';
 export { createLogRecord } from './core/records.js';
