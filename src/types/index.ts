@@ -18,6 +18,9 @@ export type {
   StructuredLogger
 } from './logger.js';
 export type {
+  ConsoleLogExporterOptions,
+  ConsoleLogFormat,
+  ConsoleLogWriter,
   LoggerOptions,
   MaskStrategy,
   PartialMaskOptions,

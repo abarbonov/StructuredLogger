@@ -2,6 +2,24 @@ import type { LogExporterInput } from './exporter.js';
 import type { DeliveryMode, ExporterErrorHandler } from './logger.js';
 import type { LogContext, LogLevel, RuntimeInfo } from './record.js';
 
+export type ConsoleLogFormat = 'json' | 'pretty';
+
+export interface ConsoleLogWriter {
+  log: (message: string) => void;
+  debug?: (message: string) => void;
+  error?: (message: string) => void;
+  info?: (message: string) => void;
+  trace?: (message: string) => void;
+  warn?: (message: string) => void;
+}
+
+export interface ConsoleLogExporterOptions {
+  colors?: boolean;
+  console?: ConsoleLogWriter;
+  format?: ConsoleLogFormat;
+  level?: LogLevel;
+}
+
 export type MaskStrategy = 'hash' | 'mask' | 'partial' | 'remove' | 'custom';
 
 export type RedactionMode = 'allowlist' | 'denylist';
