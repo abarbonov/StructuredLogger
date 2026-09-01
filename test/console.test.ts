@@ -37,4 +37,35 @@ describe('consoleLogExporter', () => {
 
     expect(messages).toEqual(['1970-01-01T00:00:00.000Z INFO fallback']);
   });
+
+  it('uses the level-specific writer and preserves JSON output', () => {
+    const messages: string[] = [];
+    const exporter = consoleLogExporter({
+      console: {
+        error: (message) => messages.push(message),
+        log: (message) => messages.push(`fallback:${message}`)
+      },
+      format: 'json'
+    });
+
+    exporter.export({
+      context: { requestId: 'request-1' },
+      id: 'record-1',
+      level: 'error',
+      logger: { name: 'checkout' },
+      message: 'failed',
+      timestamp: 0
+    });
+
+    expect(messages).toEqual([
+      JSON.stringify({
+        context: { requestId: 'request-1' },
+        id: 'record-1',
+        level: 'error',
+        logger: { name: 'checkout' },
+        message: 'failed',
+        timestamp: 0
+      })
+    ]);
+  });
 });
