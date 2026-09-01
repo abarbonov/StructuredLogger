@@ -1,6 +1,7 @@
 export { mergeLogContext, normalizeLogData } from './core/context.js';
 export { createLogger } from './core/create-logger.js';
 export { createRecordId } from './core/id.js';
+export { consoleLogExporter } from './exporters/console.js';
 export { getLogLevelRank, isLogLevel, isLogLevelEnabled, LOG_LEVELS } from './core/levels.js';
 export { createLogRecord } from './core/records.js';
 export { redactLogRecord } from './core/redact.js';
@@ -8,6 +9,9 @@ export { detectRuntime, getRuntimeType } from './core/runtime.js';
 export { serializeError } from './core/serialize-error.js';
 export type { CreateLogRecordOptions } from './core/records.js';
 export type {
+  ConsoleLogExporterOptions,
+  ConsoleLogFormat,
+  ConsoleLogWriter,
   DeliveryMode,
   ExporterErrorEvent,
   ExporterErrorHandler,
