@@ -2,7 +2,9 @@ export { mergeLogContext, normalizeLogData } from './core/context.js';
 export { createRecordId } from './core/id.js';
 export { getLogLevelRank, isLogLevel, isLogLevelEnabled, LOG_LEVELS } from './core/levels.js';
 export { createLogRecord } from './core/records.js';
+export { redactLogRecord } from './core/redact.js';
 export { detectRuntime, getRuntimeType } from './core/runtime.js';
+export { serializeError } from './core/serialize-error.js';
 export type { CreateLogRecordOptions } from './core/records.js';
 export type {
   DeliveryMode,
@@ -18,6 +20,13 @@ export type {
   LogMethod,
   LogRecord,
   LoggerOptions,
+  MaskStrategy,
+  PartialMaskOptions,
+  RedactionMode,
+  RedactionOptions,
+  RedactionPreset,
+  RedactionRule,
+  RedactionUrlOptions,
   RuntimeInfo,
   SerializedError,
   StructuredLogger,

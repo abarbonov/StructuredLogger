@@ -14,7 +14,7 @@ const logLevelRanks: Record<LogLevel, number> = {
 export const isLogLevel = (value: unknown): value is LogLevel =>
   typeof value === 'string' && LOG_LEVELS.includes(value as LogLevel);
 
-export const getLogLevelRank = (level: LogLevel): number => logLevelRanks[level];
+export const getLogLevelRank = (level: LogLevel) => logLevelRanks[level];
 
-export const isLogLevelEnabled = (level: LogLevel, minimumLevel: LogLevel): boolean =>
+export const isLogLevelEnabled = (level: LogLevel, minimumLevel: LogLevel) =>
   getLogLevelRank(level) >= getLogLevelRank(minimumLevel);
