@@ -22,7 +22,7 @@ export interface CreateLogRecordOptions {
   timestamp?: number;
 }
 
-export const createLogRecord = (options: CreateLogRecordOptions): LogRecord => {
+export const createLogRecord = (options: CreateLogRecordOptions) => {
   const record: LogRecord = {
     id: options.id ?? createRecordId(),
     timestamp: options.timestamp ?? Date.now(),

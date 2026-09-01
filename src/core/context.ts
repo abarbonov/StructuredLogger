@@ -11,7 +11,7 @@ export const isPlainData = (value: unknown): value is LogData => {
   return prototype === Object.prototype || prototype === null;
 };
 
-const copySafeProperties = (source: LogData): LogData => {
+const copySafeProperties = (source: LogData) => {
   const result: LogData = {};
 
   for (const key of Object.keys(source)) {
@@ -31,7 +31,7 @@ const copySafeProperties = (source: LogData): LogData => {
 export const normalizeLogData = (value: unknown): LogData | undefined =>
   isPlainData(value) ? copySafeProperties(value) : undefined;
 
-export const mergeLogContext = (parent: LogContext = {}, child: LogContext = {}): LogContext => {
+export const mergeLogContext = (parent: LogContext = {}, child: LogContext = {}) => {
   const normalizedParent = normalizeLogData(parent) ?? {};
   const normalizedChild = normalizeLogData(child) ?? {};
 

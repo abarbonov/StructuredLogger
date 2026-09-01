@@ -8,10 +8,10 @@ interface RuntimeProcess {
   };
 }
 
-const getRuntimeProcess = (): RuntimeProcess | undefined =>
+const getRuntimeProcess = () =>
   (globalThis as typeof globalThis & { process?: RuntimeProcess }).process;
 
-export const detectRuntime = (): RuntimeInfo => {
+export const detectRuntime = () => {
   const process = getRuntimeProcess();
 
   if (globalThis.navigator?.product === 'ReactNative') {
@@ -35,4 +35,4 @@ export const detectRuntime = (): RuntimeInfo => {
   return { type: 'browser' };
 };
 
-export const getRuntimeType = (): SupportedRuntime => detectRuntime().type;
+export const getRuntimeType = () => detectRuntime().type;

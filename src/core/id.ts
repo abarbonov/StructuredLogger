@@ -1,4 +1,4 @@
-export const createRecordId = (): string => {
+export const createRecordId = () => {
   const crypto = globalThis.crypto;
 
   if (typeof crypto?.randomUUID === 'function') {

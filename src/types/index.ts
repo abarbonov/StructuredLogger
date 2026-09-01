@@ -17,4 +17,13 @@ export type {
   LogMethod,
   StructuredLogger
 } from './logger.js';
-export type { LoggerOptions } from './options.js';
+export type {
+  LoggerOptions,
+  MaskStrategy,
+  PartialMaskOptions,
+  RedactionMode,
+  RedactionOptions,
+  RedactionPreset,
+  RedactionRule,
+  RedactionUrlOptions
+} from './options.js';
