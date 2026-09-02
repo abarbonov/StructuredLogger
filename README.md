@@ -112,13 +112,6 @@ masking, removal, partial masking, hashing, and safe custom transforms.
 Redaction reduces accidental disclosure risk; it does not by itself establish legal,
 regulatory, or organizational compliance.
 
-## Documentation
-
-| Guide                                          | Description              |
-| ---------------------------------------------- | ------------------------ |
-| [Release checklist](docs/release-checklist.md) | Checks before publishing |
-| [Examples](examples/README.md)                 | Runnable usage examples  |
-
 ## Development
 
 ```bash
